@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>context menu</title>
+  </head>
+  <body>
+    <style>
+      .contextmenu {
+        width: 180px;
+        height: 240px;
+        background-color: #f2f2f2;
+        position: absolute;
+        border: 1px solid #bfbfbf;
+        box-shadow: 2px 2px 3px #aaaaaa;
+        display: none;
+      }
+      #m1 {
+        background-color: red;
+      }
+      #m2 {
+        background-color: black;
+      }
+      .show {
+        display: block;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .box {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+      }
+      #b1 {
+        top: 100px;
+        left: 100px;
+        background-color: #ff0000;
+      }
+      #b2 {
+        top: 300px;
+        left: 300px;
+        background-color: #ffff00;
+      }
+    </style>
+
+    <div class="box" id="b1">box1</div>
+    <div class="box" id="b2">box2</div>
+
+    <div class="contextmenu" id="m1"></div>
+    <div class="contextmenu" id="m2"></div>
+    <script>
+      function showContextMenu(id, target) {
+        if (typeof target == undefined) {
+          target = document;
+        } else if (typeof target === "string") {
+          target = document.getElementById(target);
+        }
+        var menu = document.getElementById(id);
+        if (!menu) {
+          menu = document.createElement("div");
+          menu.id = id;
+          menu.classList.add("hidden");
+          document.body.appendChild(menu);
+        }
+
+        if (!target.binded) {
+          bindEvent(target, "contextmenu", closeContextMenu);
+          bindEvent(target, "mouseup", openNewContextMenu);
+          bindEvent(target, "mousedown", closeNewContextMenu);
+          target.binded = true;
+        }
+
+        function closeContextMenu() {
+          return false;
+        }
+
+        function openNewContextMenu(ev) {
+          ev = ev || window.event;
+          var btn = ev.button;
+          if (btn == 2) {
+            menu.style.left = ev.clientX + "px";
+            menu.style.top = ev.clientY + "px";
+            menu.classList.add("show");
+          } else {
+            menu.classList.remove("show");
+          }
+        }
+
+        function closeNewContextMenu(ev) {
+          menu.classList.remove("hidden");
+        }
+
+        function bindEvent(elem, eventType, callback) {
+          var ieType = ["on" + eventType];
+          if (ieType in elem) {
+            elem[ieType] = callback;
+          } else if ("attachEvent" in elem) {
+            elem.attachEvent(ieType, callback);
+          } else {
+            elem.addEventListener(eventType, callback, false);
+          }
+        }
+      }
+      
+      showContextMenu('m1', 'b1')
+      showContextMenu('m2', 'b2')
+    </script>
+  </body>
+</html>
